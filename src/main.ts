@@ -1,16 +1,14 @@
 //Common Helper Methods
-import RemNoteAPI from "../remnote-api/RemNoteAPI.js"
+import RemNoteAPI from "remnote-api"
 
-async function getRem(id) {
+export const getRem = async (id:string) => {
   const context = await RemNoteAPI.v0.get(id)
   return context
 }
-async function resolve(data) {
-  return await Promise.all(data)
-}
-async function createRem(name,parent) {
+
+export const createRem = async (name:string,parent:string) => {
   return await RemNoteAPI.v0.create(name, parent)
 }
-async function remByName(name) {
+export const remByName = async (name:string) => {
 return await RemNoteAPI.v0.get_by_name(name)
 }

@@ -1,105 +1,114 @@
-function nameMap(columns) {
-    const map = new Map();
-    columns.forEach(item => {
-        const id = item._id;
-        const name = item.name[0];
-        map.set(id, name);
-    });
-    return map;
-}
-function getRowColumn(row, columns) {
-    const columnNames = nameMap(columns);
-    row.name[0]._id;
-}
+import RemNoteAPI, { Rem, RemNoteAPIv0, validRem } from "remnote-api"
+import { getRem } from "./main"
 
-async function getTemplate(name) {
-    return await RemNoteAPI.v0.get_by_name(name);
-}
-function formatChildren(item) {
-    if (item[0][0] == undefined)
-        return;
-    const name = item[0][0];
-}
-function formatData(columns, rows) {
-    const map = nameMap(columns);
+type rowType = [name:string,id:string,tags:string[],children:Rem[]]
 
-    const newrows = rows.map(item => {
-        const data = {};
-        for (let i = 0; i < item.length; i++) {
-            if (i == 0 && item[0][0])
-                data["name"] = item[0][0];
-            else {
-                const namez = item[i].name ? item[i].name[0]._id : undefined;
-                const colName = map.get(namez);
-                if (colName && item[i].content)
-                    data[colName] = item[i].content[0];
-
-            }
+export const nameMap = (columns:Rem[]) =>  {
+    const map = new Map()
+    columns.forEach( item => {
+        if (item.found == true) {
+            const id = item._id
+            const name = item.name[0]
+            map.set(id,name)
         }
-        return data;
+   })
+    return map
+  }
+export const getTemplate = async (name:string) => {
+    return await RemNoteAPI.v0.get_by_name(name)
+}
+export const getRows = async (data:Rem) => {
+    if (data.found !== true) return []
 
-    });
-    return newrows;
+    const newData = await Promise.all(data.tagChildren.map(
+        async id => await (getRem(id)
+        )))
 
+    return await getRowChildren(newData)
+
+  
+}
+export const getData = async (template:string) => {
+    const data = await getTemplate(template)
+    const columns = await getColumns(data)
+    const rows = await getRows(data) as rowType[]
+    const table = formatData(columns,rows)
+    const columnData = setupColumns(columns) as {title:string, field:string}[]
+
+    return {data:table, columns:columnData}
+ 
+}
+export const setupColumns = (columns:Rem[]) => {
+    const filtered = columns.filter( item => item.found == true && item.name[0] !== undefined)
+    return filtered.map(item => {
+        if (item.found == true) {
+            const name = item.name[0]
+            return {title: name, field: name}
+        }
+    })
 
 }
-
-async function getColumns(data) {
-    const promises = data.children.map(async (id) => await getRem(id));
-    const newdata = await Promise.all(promises);
-    return newdata.filter(item => item.remType === "slot");
-}
-
-async function resolve(data) {
-    return await Promise.all(data);
-}
-
-async function getRowChildren(data) {
-    const promises = data.map(async (item) => {
-        const children = await resolve(item.children.map(async (child) => getRem(child)));
-        return [item.name, ...children];
-    });
-    const newdata = await Promise.all(promises);
-    return newdata;
-}
-
-async function getRows(data) {
-    const newdata = await resolve(data.tagChildren.map(async (id) => await getRem(id)));
-    const filtered = newdata.filter(item => item.remType !== "no_content");
-    const complete = await getRowChildren(filtered);
-    return complete;
-
-}
-
-async function getData(template) {
-    const data = await getTemplate(template);
-    const columns = await getColumns(data);
-    const rows = await getRows(data);
-    const table = formatData(columns, rows);
-    const columnData = setupColumns(columns);
-
-    return { data: table, columns: columnData };
-}
-function setupColumns(columns) {
-    const filtered = columns.filter(x => x.name[0] !== undefined);
-    const data = filtered.map(item => {
-        const name = item.name[0];
-        return { title: name, field: name };
-    });
-    return data;
-
-}
-
-async function setupTable(template) {
-    const { data, columns } = await getData(template);
+export const setupTable = async(template:string) => {
+    const {data,columns} = await getData(template)
 
     const table = new Tabulator("#example", {
         height: 205,
         data,
         layout: "fitColumns",
-        tooltips: true,
-        movableColumns: true,
+        tooltips:true,
+        movableColumns:true,
         resizableRows: true,
-        columns: [{ title: "Name", field: "name" }, ...columns]
-    });
+        columns: [{title:"Name", field:"name",formatter:"link",formatterParams:{
+            labelField:"name",
+            urlPrefix:"https://www.remnote.io/document/",
+            urlField:"_id",
+            target:"_blank"
+          }}, {title:"Tags",field:"_tags"} ,...columns]
+    })
+
 }
+export const getRowChildren = async (data:Rem[]) => {
+   return await Promise.all(data.map( async item => {
+        if (item.found == false) return []
+
+        const children = await Promise.all(item.children.map( async id => getRem(id)))
+        const tags = await Promise.all(item.tagParents.map(async id => getRem(id)))
+        const newTags = tags.filter(tag => tag.found == true)
+            .map(tag => (tag as validRem).nameAsMarkdown)
+
+        return [item.nameAsMarkdown,item._id,newTags,children] as rowType
+    }))
+
+}
+export const getColumns = async (data:Rem) => {
+    if (data.found !== true) return []
+    const newData = await Promise.all(data.children.map( async id => await getRem(id)))
+    return newData.filter(item => item.found == true && item.remType == "slot")
+}
+export const formatData = (columns:Rem[],rows:rowType[]) => {
+    const map = nameMap(columns)
+
+    return rows.map(item => {
+        const data = new Map();
+        data.set("name",item[0])
+        data.set("_id",item[1])
+        data.set("_tags",item[2])
+
+        for (const rem of item[3]) {
+            if (rem.found) {
+                const name = rem.nameAsMarkdown
+                if (map.get(name)) data.set(name,rem.contentAsMarkdown)
+            }
+        }
+
+        return data 
+    })
+
+}
+
+    
+
+    
+  
+    
+  
