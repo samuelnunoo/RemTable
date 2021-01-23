@@ -2,7 +2,7 @@ import RemNoteAPI, { validRem } from 'remnote-api';
 import { getRem } from './main';
 import { setupTable } from './tableMethods';
 
-export const getMetaData = () => {
+export const getMetaData = async () => {
   const document = await RemNoteAPI.v0.get_by_name("com.panopticon.remtable")
   const map = new Map() 
 
@@ -27,13 +27,10 @@ export const getMetaData = () => {
   return false 
 
 }
-
-//@todo fix this 
 export const createMetaData = () => {
-  RemNoteAPI.v0.create("com.panopticon.remtable",{"isDocument":true} as RemNoteAPi.options)
+  RemNoteAPI.v0.create("com.panopticon.remtable",undefined,{"isDocument":true})
 
 }
-
 export const getTemplates = async () => {
   const template = await RemNoteAPI.v0.get_by_name("RemTable:Template")
 
@@ -43,14 +40,12 @@ export const getTemplates = async () => {
   return data.map( rem => rem.nameAsMarkdown)
 
 }
-
-const extractTemplate = (data) => {
+export const extractTemplate = (data:string[]) => {
   const template = data.filter(item => item.split(":")[0] == "Template")
   return template[0].split(":")[1]
 
 }
-
-const setup = async () => {
+export const setup = async () => {
   //getContext
   const context = await RemNoteAPI.v0.get_context()
   const metaData = await getMetaData() 
