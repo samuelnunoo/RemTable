@@ -9,8 +9,10 @@
     "docker:build": "docker build -f Dockerfile -t rem-table-image",
     "docker:remove": "docker image rm rem-table-image --force",
     "docker:watch": " webpack serve --host 0.0.0.0 --config config/webpack/webpack.dev.js",
-    "docker:dev": "docker run --rm  -v %cd%:/app -v /app/node_modules -p 8080:8080 --name rem-table-container rem-table-image"
+    "docker:dev": "docker run --rm  -v %cd%:/app -v /app/node_modules -p 8080:8080 --name rem-table-container rem-table-image",
+    "deploy": "webpack --config config/webpack/webpack.prod.js && gh-pages -d dist"
   },
+  "homepage": "https://samuelnunoo.github.io/RemTable",
   "dependencies": {
     "@babel/preset-typescript": "^7.12.7",
     "copy-webpack-plugin": "^7.0.0",
