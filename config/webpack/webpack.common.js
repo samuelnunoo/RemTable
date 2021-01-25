@@ -21,7 +21,6 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                exclude:/node_modules/,
                 use: [
                     'vue-style-loader',
                     {
@@ -33,11 +32,19 @@ module.exports = {
                 ]
             },
             {
-                test: /\.scss$/,
+                test: /\.s(c|a)ss$/,
                 use: [
                     'vue-style-loader',
                     {loader:'css-loader', options: {esModule:false}},
-                        'sass-loader'
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            implementation:require('sass')
+
+                        }
+                    }
+              
+                    
                 ]
             }
         ]

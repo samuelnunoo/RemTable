@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+ <v-app>
     <RemTable/>
-  </div>
+ </v-app>
 </template>
 
 <script>
