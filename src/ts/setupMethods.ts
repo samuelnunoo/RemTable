@@ -1,6 +1,6 @@
-import RemNoteAPI, { validRem } from 'remnote-api';
+import RemNoteAPI, { validRem } from "remnote-api"
 import { getRem } from './main';
-import { setupTable } from './tableMethods';
+
 
 export const getMetaData = async () => {
   const document = await RemNoteAPI.v0.get_by_name("com.panopticon.remtable")
@@ -45,6 +45,11 @@ export const extractTemplate = (data:string[]) => {
   return template[0].split(":")[1]
 
 }
+
+
+//@todo fix this 
+
+/*
 export const setup = async () => {
   //getContext
   const context = await RemNoteAPI.v0.get_context()
@@ -63,6 +68,8 @@ export const setup = async () => {
   
 
 }
+
+*/
 
 
 

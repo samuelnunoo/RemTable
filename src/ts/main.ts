@@ -1,5 +1,5 @@
 //Common Helper Methods
-import RemNoteAPI from "remnote-api"
+import  RemNoteAPI from "remnote-api"
 
 export const getRem = async (id:string) => {
   const context = await RemNoteAPI.v0.get(id)

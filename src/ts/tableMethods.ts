@@ -48,6 +48,8 @@ export const setupColumns = (columns:Rem[]) => {
     })
 
 }
+
+/*
 export const setupTable = async(template:string) => {
     const {data,columns} = await getData(template)
 
@@ -68,6 +70,9 @@ export const setupTable = async(template:string) => {
     })
 
 }
+
+*/
+
 export const getRowChildren = async (data:Rem[]) => {
    return await Promise.all(data.map( async item => {
         if (item.found == false) return []

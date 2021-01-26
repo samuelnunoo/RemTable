@@ -3,6 +3,7 @@
         <h2> Tags </h2>
         <v-spacer/>
         <v-autocomplete
+            style = "max-width: 50%"
             v-model="values"
             :items="items"
             rounded

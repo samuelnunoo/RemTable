@@ -1,6 +1,6 @@
 import RemNoteAPI, { Rem,RemNoteAPIv0,validRem } from 'remnote-api';
 import { remByName, getRem, createRem } from './main';
-import { setupTable } from './tableMethods';
+
 
 export const getSettingsPage = async () => {
     return remByName("com.panopticon.remtable")
@@ -49,6 +49,6 @@ export const saveSearch = async (template:string) => {
 }
 export const search = async (template:string) => {
     await saveSearch(template)
-    await setupTable(template)
+   //@todo fix this  await setupTable(template)
 }
 

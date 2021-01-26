@@ -19,13 +19,15 @@
         </template>
   
         <v-card
+        style="padding:50px"
             min-height = "200"
         >
           <v-container>
             <!--  <type @click="onSelect"/> -->
             <!-- <component :is="comptype" /> -->
-            <list-item/>
+       
             <type @click="onSelect" />
+            <component :is = "comptype" />
 
 
           </v-container>
@@ -48,7 +50,7 @@ export default {
     },
     data() {
         return {
-                comptype:"table",
+                comptype:"table-item",
                 menu: false,
                 message: false,
                 hints: true,

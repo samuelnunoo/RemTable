@@ -1,13 +1,15 @@
 <template>
-    <v-row>
+    <v-row
+        style = "padding-bottom: 10px;"
+    >
         <h2> Type </h2>
         <v-spacer/>
         <v-btn-toggle
             v-model="toggle"
             rounded
         >
-            <v-btn @click = "onSelect('table')"> Table </v-btn>
-            <v-btn @click = "onSelect('list')" > List </v-btn>
+            <v-btn @click = "onSelect('table-item')"> Table </v-btn>
+            <v-btn @click = "onSelect('list-item')" > List </v-btn>
         </v-btn-toggle>
     </v-row>
 </template>
