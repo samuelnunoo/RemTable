@@ -104,18 +104,20 @@ export const formatData = (columns:Rem[],rows:rowType[]) => {
     const map = nameMap(columns)
 
     return rows.map(item => {
-        const data = new Map();
-        data.set("name",item[0])
-        data.set("_id",item[1])
-        data.set("_tags",item[2])
+        const data = {
+            "name":item[0],
+            "_id": item[1],
+            "_tags": item[2]
+        }
 
         for (const rem of item[3]) {
             if (rem.found) {
                 const name = rem.nameAsMarkdown
-                if (map.get(name)) data.set(name,rem.contentAsMarkdown)
+                if (map.get(name)) data[name] = rem.contentAsMarkdown
             }
         }
 
+        console.log(data)
         return data 
     })
 

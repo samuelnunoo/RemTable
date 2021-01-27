@@ -72,10 +72,11 @@ export default Vue.extend({
         if (type == 'table-item') {
           const template = this.$store.getters.getTemplate
           const {data,options} = await setupTable(template)
-          
-          console.log(data)
+
           this.$store.commit('setData',data)
           this.$store.commit('setOptions',options)
+          const result = this.$store.getters.getData 
+          console.log("current", result)
           
         }
      

@@ -31,7 +31,13 @@ const store = new Vuex.Store( {
         },
 
         setData (state,data) {
-            state.data = data 
+            console.log("v1",state.data)
+            for (let i = 0; i < data.length; i++) {
+    
+                Vue.set(state.data,i,data[i])
+            }
+
+            console.log("data",state.data)
         },
 
         setOptions (state, options) {

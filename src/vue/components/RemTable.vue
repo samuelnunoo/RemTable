@@ -6,7 +6,6 @@
                  <settings-button/>
             </v-toolbar>
             <VueTabulator v-model="data" :options="options"/>
-        </v-col>
     </v-row>
 </v-container>
 </template>
