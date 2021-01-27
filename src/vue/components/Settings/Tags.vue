@@ -18,13 +18,24 @@
     
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            values: [],
-            items: ["car","soup","cat"]
+<script lang='ts'>
+    import Vue from "vue"
+
+    export default Vue.extend( {
+        data() {
+            return {
+                values: [] as string[],
+                items: [] as string[]
+            }
+        },
+
+        //@todo figure out how to get all Tags 
+        mounted() {
+            const init = async () => {
+
+            }
         }
-    }
-}
+    })
+
+
 </script>

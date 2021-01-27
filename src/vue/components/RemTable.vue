@@ -5,7 +5,7 @@
                 <v-spacer/>
                  <settings-button/>
             </v-toolbar>
-            <VueTabulator v-model="values" :options="options"/>
+            <VueTabulator v-model="data" :options="options"/>
         </v-col>
     </v-row>
 </v-container>
@@ -19,15 +19,12 @@ export default {
         "settings-button":Settings,
         "type":Type,
     },
-    data() {
-        return {
-            values: [{name:"Testing"},{name:"Testing2"}],
-            options: {
-                columns:[{
-                    title:"Name",
-                    field:'name'
-                }]
-            }
+    computed: {
+        data: function () {
+            return this.$store.getters.getData 
+        },
+        options: function() {
+            return this.$store.getters.getOptions
         }
     }
 }

@@ -25,7 +25,7 @@ export default {
 
     methods: {
         onSelect: function (selection) {
-            this.$emit('click',selection)
+            this.$store.commit('setType', selection)
         }
     }
 }

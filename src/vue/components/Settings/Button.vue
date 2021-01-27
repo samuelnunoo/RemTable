@@ -26,9 +26,12 @@
             <!--  <type @click="onSelect"/> -->
             <!-- <component :is="comptype" /> -->
        
-            <type @click="onSelect" />
+            <type/>
             <component :is = "comptype" />
-
+            <v-row>
+              <v-btn  @click="onSubmit" color ="blue" dark> Submit </v-btn>
+            </v-row>
+            
 
           </v-container>
           <v-divider/>
@@ -36,30 +39,49 @@
      </v-menu>
 </template>
 
-<script>
-import Type from "./Type"
-import Template from "./Template"
-import Tags from "./Tags"
+<script lang='ts'>
+import Type from "./Type.vue"
+import Template from "./Template.vue"
+import Tags from "./Tags.vue"
+import Vue from "vue"
+import { setupTable } from '../../../ts/tableMethods';
 
-export default {
+export default Vue.extend({    
     name: "settings-button",
     components: {
-        "type":Type,
-        "table-item":Template,
-        "list-item":Tags 
+        "type":Type as any,
+        "table-item":Template as any,
+        "list-item":Tags as any 
     },
     data() {
         return {
-                comptype:"table-item",
                 menu: false,
-                message: false,
-                hints: true,
         }
     },
-    methods:{
-      onSelect: function (value) {
-        this.comptype = value
+    computed: {
+      comptype: function () {
+        return this.$store.getters.getType
+
       }
+
+    },
+    methods:{
+      onSubmit: async function () {
+        const type = this.$store.getters.getType 
+
+        if (type == 'table-item') {
+          const template = this.$store.getters.getTemplate
+          const {data,options} = await setupTable(template)
+          
+          console.log(data)
+          this.$store.commit('setData',data)
+          this.$store.commit('setOptions',options)
+          
+        }
+     
+      },
     }
-}
+
+})
+
 </script>

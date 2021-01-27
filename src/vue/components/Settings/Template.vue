@@ -1,5 +1,5 @@
-import RemNoteAPI from 'remnote-api';
 <template>
+<v-container>
     <v-row>
         <h2> Template: </h2>
         <v-spacer/>
@@ -13,7 +13,11 @@ import RemNoteAPI from 'remnote-api';
             clearable
             auto-select-first
         /> 
+
     </v-row>
+</v-container>
+
+    
 </template>
 
 <script lang='ts'>
@@ -23,16 +27,33 @@ import { getTemplates } from '../../../ts/setupMethods';
 
 export default Vue.extend({
     name:"Template",
+    computed: {
+        value: {
+            get() {
+                return this.$store.getters.getTemplate 
+            },
+            set(value) {
+                this.$store.commit('setTemplate',value)
+            }
+        }
+    },
     data() {
         return {
-            value: undefined,
             entries: [] as string[]
              }
     },
+  
     mounted () {
         const init = async () => {
-            const templates = await getTemplates()
-            this.entries = templates 
+            try {
+                const templates = await getTemplates()
+                this.entries = templates 
+            }
+
+            catch {
+                this.entries = ["test1","test2","test3"]
+            }
+         
         }
 
         init()

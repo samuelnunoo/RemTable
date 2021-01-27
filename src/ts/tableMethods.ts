@@ -49,12 +49,21 @@ export const setupColumns = (columns:Rem[]) => {
 
 }
 
-/*
 export const setupTable = async(template:string) => {
     const {data,columns} = await getData(template)
 
-    //@todo figure this out
-    const table = new Tabulator("#example", {
+    const options = {
+        columns:[{title:"Name", field:"name",formatter:"link",formatterParams:{
+        labelField:"name",
+        urlPrefix:"https://www.remnote.io/document/",
+        urlField:"_id",
+        target:"_blank"
+      }}, {title:"Tags",field:"_tags"} ,...columns]}
+
+      return {data, options}
+
+      //@todo add in other options to vue settings 
+    /*const table = new Tabulator("#example", {
         height: 205,
         data,
         layout: "fitColumns",
@@ -68,10 +77,10 @@ export const setupTable = async(template:string) => {
             target:"_blank"
           }}, {title:"Tags",field:"_tags"} ,...columns]
     })
+    */
 
 }
 
-*/
 
 export const getRowChildren = async (data:Rem[]) => {
    return await Promise.all(data.map( async item => {
