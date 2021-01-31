@@ -1,54 +1,60 @@
-import RemNoteAPI, { Rem,RemNoteAPIv0,validRem } from 'remnote-api';
-import { remByName, getRem, createRem } from './main';
+import  { context, Rem,validRem } from 'remnote-api';
+import { getContext, updateRem, remByName, getRem, getConfig, createRem } from './apiMethods';
+import { setupTable } from './tableMethods';
 
+export const SPLIT_CHAR = ":"
 
-export const getSettingsPage = async () => {
-    return remByName("com.panopticon.remtable")
+export const getMainTag = async (gc:typeof getContext,rbn:typeof remByName) => {
+    const context = await gc()
+    return await rbn("RemTable" + SPLIT_CHAR + context.remId)
 }
-export const getMetaData = async () => {
-    const context = await RemNoteAPI.v0.get_context()
-    return await remByName("RemTable:" + context.remId)
-}
-export const updateRemTemplate = async (rem:Rem,template:string) => {
-    if (rem.found !== true) return;
 
-    const children = await Promise.all(rem.children.map(async id => await getRem(id))) as validRem[]
-    
+export const getMainTagWrapper = async () => {
+    return await getMainTag(getContext,remByName)
+}
+
+export const findConfigOption = async (gr:typeof getRem,rem:Rem,target:string) => {
+    if (rem.found !== true) return undefined 
+    const children = await Promise.all(rem.children.map(async id => await gr(id))) as validRem[]
+
     //find Existing
     for (const node of children) {
         if (node.nameAsMarkdown.length > 0) {
-            //@todo make the split criteria more unique like something no one uses 
-            const newName = node.nameAsMarkdown.split(":")[0]
-            
-            if (newName == "Template") {
-                //update 
-                await RemNoteAPI.v0.update(node._id,{"name":"Template:" + template})
-                return 
-            }
+            const newName = node.nameAsMarkdown.split(SPLIT_CHAR)[0]
+            if (newName == target) return node 
         }
     }
 
+    return undefined 
 }
-export const saveSearch = async (template:string) => {
-    const context = await RemNoteAPI.v0.get_context()
-    const title = "Template:" + template
-    const remID = await getMetaData()
-    const settings = await getSettingsPage() as validRem
-    let parent
 
-    if (remID.found == true) parent = remID._id
-    else {
-        parent = await createRem("RemTable:" + context.remId, settings._id)
-        parent = parent.remId
-    }
+export const updateRemTemplate = async (node:Rem,ur:typeof updateRem,template:string) => {
+    if (node.found == true) await ur(node._id, {"name":"Template" + SPLIT_CHAR + template})
+}
+
+export const updateRemTemplateWrapper = async (node:Rem,template:string) => {
+    updateRemTemplate(node,updateRem,template)
+}
+
+export const getParent = async (cr:typeof createRem,gcontext:context,remID:Rem,settings:validRem) => {
+    return remID.found == true ? remID._id : 
+    (await cr("RemTable" + SPLIT_CHAR + gcontext.remId, settings._id)).remId
+}
+
+export const saveSearch = async (template:string) => {
+    const context = await getContext()
+    const remID = await getMainTagWrapper()
+    const settings = await  getConfig() as validRem
+    const parentID = await getParent(createRem,context,remID,settings)
 
     //Save Template Name 
-    const rem = await getRem(parent)
-    updateRemTemplate(rem,template)
+    const rem = await getRem(parentID)
+    updateRemTemplateWrapper(rem,template)
 
 }
+
 export const search = async (template:string) => {
     await saveSearch(template)
-   //@todo fix this  await setupTable(template)
+    await setupTable(template)
 }
 

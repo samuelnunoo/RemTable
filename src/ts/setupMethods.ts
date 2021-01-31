@@ -1,16 +1,17 @@
-import RemNoteAPI, { validRem } from "remnote-api"
-import { getRem } from './main';
+import  { validRem } from "remnote-api"
+import { getRem, getConfig, remByName } from './apiMethods';
 
 
-export const getMetaData = async () => {
-  const document = await RemNoteAPI.v0.get_by_name("com.panopticon.remtable")
+
+export const getMetaData = async (gc:typeof getConfig, gr: typeof getRem) => {
+  const document = await gc()
   const map = new Map() 
 
   if (document.found == true) {
     // to get child Data
-    const newData = await Promise.all(document.children.map(async id => await getRem(id))) as validRem[]
+    const newData = await Promise.all(document.children.map(async id => await gr(id))) as validRem[]
     const mapped = await Promise.all(newData.map( async rem => {
-      const promises = await Promise.all(rem.children.map(async id => getRem(id)))
+      const promises = await Promise.all(rem.children.map(async id => gr(id)))
       rem.children = promises.map(child => ((child as validRem).nameAsMarkdown))
       return rem
     }))
@@ -27,22 +28,27 @@ export const getMetaData = async () => {
   return false 
 
 }
-export const createMetaData = () => {
-  RemNoteAPI.v0.create("com.panopticon.remtable",undefined,{"isDocument":true})
+
+export const getMetaDataWrapper = async () => {
+  return await getMetaData(getConfig,getRem)
+}
+
+export const getTemplatesWrapper = async () => {
+  return await getTemplates(remByName,getRem)
 
 }
-export const getTemplates = async () => {
-  const template = await RemNoteAPI.v0.get_by_name("RemTable:Template")
 
+export const getTemplates = async (rbn:typeof remByName, gr: typeof getRem) => {
+  const template = await rbn("RemTable:Template")
   if (template.found !== true) return []
-
-  const data = await Promise.all(template.tagChildren.map(async id => await getRem(id))) as validRem[]
+  const data = await Promise.all(template.tagChildren.map(async id => await gr(id))) as validRem[]
   return data.map( rem => rem.nameAsMarkdown)
 
 }
+
 export const extractTemplate = (data:string[]) => {
   const template = data.filter(item => item.split(":")[0] == "Template")
-  return template[0].split(":")[1]
+  return template.length > 0 ? template[0].split(":")[1] : ""
 
 }
 

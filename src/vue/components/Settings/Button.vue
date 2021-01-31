@@ -67,6 +67,7 @@ export default Vue.extend({
     },
     methods:{
       onSubmit: async function () {
+        this.$data.menu = false 
         const type = this.$store.getters.getType 
 
         if (type == 'table-item') {
@@ -75,8 +76,7 @@ export default Vue.extend({
 
           this.$store.commit('setData',data)
           this.$store.commit('setOptions',options)
-          const result = this.$store.getters.getData 
-          console.log("current", result)
+
           
         }
      

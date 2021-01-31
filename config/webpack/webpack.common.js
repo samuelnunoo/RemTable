@@ -17,7 +17,7 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                exclude: /node_modules/,
+                exclude: [/node_modules/,/\.test.ts$/],
                 use: [{ loader: 'ts-loader', options: { appendTsSuffixTo: [/\.vue$/] } }],
             },
             {
@@ -60,10 +60,6 @@ module.exports = {
         new VueLoaderPlugin(),
         new HtmlWebpackPlugin({
             template: INDEX_HTML,
-            minify: {
-                collapseWhitespace: true,
-                removeComments: true 
-                    }
         })
      
     ]

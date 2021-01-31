@@ -1,5 +1,5 @@
-import RemNoteAPI, { Rem, RemNoteAPIv0, validRem } from "remnote-api"
-import { getRem } from "./main"
+import  { Rem, validRem } from "remnote-api"
+import { getRem, getTemplate } from './apiMethods';
 
 type rowType = [name:string,id:string,tags:string[],children:Rem[]]
 
@@ -14,9 +14,7 @@ export const nameMap = (columns:Rem[]) =>  {
    })
     return map
   }
-export const getTemplate = async (name:string) => {
-    return await RemNoteAPI.v0.get_by_name(name)
-}
+
 export const getRows = async (data:Rem) => {
     if (data.found !== true) return []
 
@@ -80,8 +78,6 @@ export const setupTable = async(template:string) => {
     */
 
 }
-
-
 export const getRowChildren = async (data:Rem[]) => {
    return await Promise.all(data.map( async item => {
         if (item.found == false) return []
@@ -111,13 +107,13 @@ export const formatData = (columns:Rem[],rows:rowType[]) => {
         }
 
         for (const rem of item[3]) {
-            if (rem.found) {
+            if (rem.found == true) {
                 const name = rem.nameAsMarkdown
-                if (map.get(name)) data[name] = rem.contentAsMarkdown
+                console.log("v7",name,rem.contentAsMarkdown)
+                data[name] = rem.contentAsMarkdown
             }
         }
 
-        console.log(data)
         return data 
     })
 

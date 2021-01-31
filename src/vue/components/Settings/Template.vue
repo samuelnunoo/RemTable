@@ -22,7 +22,7 @@
 
 <script lang='ts'>
 import Vue from "vue"
-import { getTemplates } from '../../../ts/setupMethods';
+import { getTemplates, getTemplatesWrapper } from '../../../ts/setupMethods';
 
 
 export default Vue.extend({
@@ -46,7 +46,7 @@ export default Vue.extend({
     mounted () {
         const init = async () => {
             try {
-                const templates = await getTemplates()
+                const templates = await getTemplatesWrapper()
                 this.entries = templates 
             }
 
