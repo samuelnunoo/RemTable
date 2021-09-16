@@ -5,6 +5,6 @@ RemTable is a RemNote Extension which allows users to create templates on any pa
 
 
 
-[Animation](https://gyazo.com/8bbd17b70ab3ce73a4c5d13fe4a14ad8)
+[Animation](https://user-images.githubusercontent.com/38366722/133655692-75f3feed-c268-41e3-9afd-45e4e8591a5a.mp4)
 
 
